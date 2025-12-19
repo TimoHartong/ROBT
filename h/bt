@@ -1,0 +1,37 @@
+#ifndef BT_H
+#define BT_H
+
+#include <stdint.h>
+
+// Struct used to return varible data from function
+struct rData
+{
+    uint32_t  nLength;   // Size of the struct
+    uint8_t   *pData;    // A byte array of return data
+    uint32_t  nStatus;   // The status of the request
+};
+
+struct rData LoadFirmware(char* filename);
+void btbcm_read_verbose_config(void);
+void btbcm_read_local_name(void);
+void btbcm_read_controller_features(void);
+void bt_writeByte(char byte);
+void bt_init(void);
+void bt_reset(void);
+void bt_loadfirmware(char* filename);
+void bt_setbaud(void);
+void bt_setbdaddr(void);
+void bt_getbdaddr(unsigned char *bdaddr);
+void bt_init(void);
+unsigned int bt_isReadByteReady(void);
+unsigned char bt_readByte(void);
+unsigned char bt_waitReadByte(void);
+void setLEeventmask(unsigned char mask);
+void startActiveScanning(void);
+void stopScanning(void);
+void startActiveAdvertising(void);
+void connect(unsigned char *addr);
+void sendACLsubscribe(unsigned int handle);
+void bt_get_local_version(unsigned char* data);
+
+#endif

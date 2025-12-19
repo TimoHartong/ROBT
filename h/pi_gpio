@@ -1,0 +1,61 @@
+#ifndef PIGPIO_H
+#define PIGPIO_H
+
+#include <stdint.h>
+
+struct GPIOSTR
+{
+    uint32_t GPSEL0     ; // 0x0000
+    uint32_t GPSEL1     ; // 0x0004
+    uint32_t GPSEL2     ; // 0x0008
+    uint32_t GPSEL3     ; // 0x000C
+    uint32_t GPSEL4     ; // 0x0010
+    uint32_t GPSEL5     ; // 0x0014
+    uint32_t GPIOSTR    ; // Filler
+    uint32_t GPSET0     ; // 0x001C
+    uint32_t GPSET1     ; // 0x0020
+    uint32_t GPIOSTR1   ; // Filler
+    uint32_t GPCLR0     ; // 0x0028
+    uint32_t GPCLR1     ; // 0x002C
+    uint32_t GPIOSTR2   ; // Filler
+    uint32_t GPLEV0     ; // 0x0034
+    uint32_t GPLEV1     ; // 0x0038
+    uint32_t GPIOSTR3   ; // Filler
+    uint32_t GPEDS0     ; // 0x0040
+    uint32_t GPEDS1     ; // 0x0044
+    uint32_t GPIOSTR4   ; // Filler
+    uint32_t GPREN0     ; // 0x004C
+    uint32_t GPREN1     ; // 0x0050
+    uint32_t GPIOSTR5   ; // Filler
+    uint32_t GPFEN0     ; // 0x0058
+    uint32_t GPFEN1     ; // 0x005C
+    uint32_t GPIOSTR6   ; // Filler
+    uint32_t GPHEN0     ; // 0x0064
+    uint32_t GPHEN1     ; // 0x0068
+    uint32_t GPIOSTR7   ; // Filler
+    uint32_t GPLEN0     ; // 0x0070
+    uint32_t GPLEN1     ; // 0x0074
+    uint32_t GPIOSTR8   ; // Filler
+    uint32_t GPAREN0    ; // 0x007C
+    uint32_t GPAREN1    ; // 0x0080
+    uint32_t GPIOSTR9   ; // Filler
+    uint32_t GPAFEN0    ; // 0x0088
+    uint32_t GPAFEN1    ; // 0x008C
+    uint32_t GPIOSTRA   ; // Filler
+    uint32_t GPPUD      ; // 0x0094
+    uint32_t GPPUDCLK0  ; // 0x0098
+    uint32_t GPPUDCLK1  ; // 0x009C
+    uint32_t GPIOSTRB[5]; // Filler
+    uint32_t TEST       ; // 0x00B0
+};
+
+// Region Sel
+
+enum
+{
+  PUPD_OFF,
+  PD_ON,
+  PU_ON
+};
+
+#endif

@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <stdint.h>
+#include "fb.h"
+#include "PI3MEM.h"
+#include "ros_utils.h"
+#include "pi_systmr.h"
+
+
+void msleep(unsigned int n)
+{
+    uint64_t time, end_time;
+
+    // Make pointer to system timer
+    int p_SysTmr = IOToUser(SYSTIMER, sizeof(struct SYSTMRSTR ) * 4 );
+    struct SYSTMRSTR* pSysTmr = (struct SYSTMRSTR*) p_SysTmr ;
+
+    time = ( pSysTmr->st_chi << 32 ) | pSysTmr->st_clo ;
+    //printf("Systimer %lld \n", time);
+
+    end_time = time + (n * 1000) ;
+    //printf("End time %lld \n", end_time);
+
+    do
+    {
+        time = ( pSysTmr->st_chi << 32 ) | pSysTmr->st_clo ;
+    } while ( time < end_time );
+}
+
+void debugstr(char *str)
+{
+    printf("%s \n", str);
+}
+
+void debugcrlf(void)
+{
+    printf("\n");
+}
+
+void debugch(unsigned char b)
+{
+    unsigned int n;
+    int c;
+    for(c=4;c>=0;c-=4) {
+        n=(b>>c)&0xF;
+        n+=n>9?0x37:0x30;
+        debugstr((char *)&n);
+    }
+    debugstr(" ");
+}
+
+void debughex(unsigned int d)
+{
+    unsigned int n;
+    int c;
+    for(c=28;c>=0;c-=4) {
+        n=(d>>c)&0xF;
+        n+=n>9?0x37:0x30;
+        debugstr((char *)&n);
+    }
+    debugstr(" ");
+}

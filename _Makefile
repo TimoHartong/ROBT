@@ -1,0 +1,5 @@
+COMPONENT = BlueTooth
+TARGET= BTProg
+OBJS = bt fb io mb ros_utils kernel
+CINCLUDES = -IC:
+include CApp

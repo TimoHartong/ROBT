@@ -1,0 +1,45 @@
+#ifndef PI3MEM_H
+#define PI3MEM_H
+
+#define BASE_ADDR    0x3F000000
+
+#define AUXIRQ       BASE_ADDR + 0x215000  // MiniUART
+#define AUXSPI1      BASE_ADDR + 0x215080  // SPI 1
+#define AUXSPI2      BASE_ADDR + 0x2150C0  // SPI 2
+#define BSC0         BASE_ADDR + 0x205000  // BSC0
+#define BSC1         BASE_ADDR + 0x804000  // BSC1
+#define BSC2         BASE_ADDR + 0x805000  // BSC2
+#define DMA0         BASE_ADDR + 0x007000  // DMA 0
+#define DMA1         BASE_ADDR + 0x007100  // DMA 1
+#define DMA2         BASE_ADDR + 0x007200  // DMA 2
+#define DMA3         BASE_ADDR + 0x007300  // DMA 3
+#define DMA4         BASE_ADDR + 0x007400  // DMA 4
+#define DMA5         BASE_ADDR + 0x007500  // DMA 5
+#define DMA6         BASE_ADDR + 0x007600  // DMA 6
+#define DMA7         BASE_ADDR + 0x007700  // DMA 7
+#define DMA8         BASE_ADDR + 0x007800  // DMA 7
+#define DMA9         BASE_ADDR + 0x007900  // DMA 9
+#define DMA10        BASE_ADDR + 0x007A00  // DMA 10
+#define DMA11        BASE_ADDR + 0x007B00  // DMA 11
+#define DMA12        BASE_ADDR + 0x007C00  // DMA 12
+#define DMA13        BASE_ADDR + 0x007D00  // DMA 13
+#define DMA14        BASE_ADDR + 0x007E00  // DMA 14
+#define DMA15        BASE_ADDR + 0xE05000  // DMA 15
+#define EMMC         BASE_ADDR + 0x300000  // EMMC
+#define GPIO         BASE_ADDR + 0x200000  // GPIO
+#define CM_GP0_CTL   BASE_ADDR + 0x101070  // Clock manager GPIO clocks
+#define CM_GP1_CTL   BASE_ADDR + 0x101078  // Clock manager GPIO clocks
+#define CM_GP2_CTL   BASE_ADDR + 0x101080  // Clock manager GPIO clocks
+#define INTREG       BASE_ADDR + 0x00B000  // ARM Int regoister
+#define PCM          BASE_ADDR + 0x203000  // PCM
+#define PWM          BASE_ADDR + 0x20C000  // PWM
+#define SPI0         BASE_ADDR + 0x204000  // SPIO0
+#define SPI_SLAVE    BASE_ADDR + 0x214000  // SPI Slave
+#define SYSTIMER     BASE_ADDR + 0x003000  // System timers
+#define UART0        BASE_ADDR + 0x201000  // PL11 Uart
+#define ARMTIMER     BASE_ADDR + 0x00B400  // Timers. This includes the 0x400 offset
+#define USB          BASE_ADDR + 0x980000  // USB
+#define VC_MBOX      BASE_ADDR + 0x00B880  // Video core Mbox
+#define RNG          BASE_ADDR + 0x104000  // Hardware random generator
+
+#endif

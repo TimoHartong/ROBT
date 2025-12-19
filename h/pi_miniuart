@@ -1,0 +1,61 @@
+#ifndef PI_MINIUART_H
+#define PI_MINIUART_H
+
+#include <stdint.h>
+
+struct MiniUART
+{
+    uint32_t AUX_IRQ                            ; // 0x0000
+    uint32_t AUX_ENBALES                        ; // 0x0004
+    uint32_t MiniUART[0xe]                      ; // Filler
+    uint32_t AUX_MU_IO_REG                      ; // 0x0040
+    uint32_t AUX_MU_IER_REG                     ; // 0x0044
+    uint32_t AUX_MU_IIR_REG                     ; // 0x0048
+    uint32_t AUX_MU_LCR_REG                     ; // 0x004C
+    uint32_t AUX_MU_MCR_REG                     ; // 0x0050
+    uint32_t AUX_MU_LSR_REG                     ; // 0x0054
+    uint32_t AUX_MU_MSR_REG                     ; // 0x0058
+    uint32_t AUX_MU_SCRATCH                     ; // 0x005C
+    uint32_t AUX_MU_CNTL_REG                    ; // 0x0060
+    uint32_t AUX_MU_STAT_REG                    ; // 0x0064
+    uint32_t AUX_MU_BAUD_REG                    ; // 0x0068
+};
+
+// IIR Regsiter
+#define ERXI  0x00000002      // Enable receive interrupt
+#define ETXI  0x00000001      // Enable transmit interrupt
+
+// IER Register
+#define INTID      0x00000006 // Interrupt ID massk
+#define TXHR_EMPTY 0x00000004  // Transmit holding gegister empty
+#define RXHR_BYTE  0x00000002  // Receiver hold valid byte
+#define CLRRXFIFO  0x00000002  // Clear RX FIFO
+#define CLRTXFIFO  0x00000004  // Clear TX FIFO
+#define INTPEND    0x00000001  // Interruupt pending
+
+// LCR Register
+#define DLAB       0x00000008  // DLAB Access
+#define BREAK      0x00000004  // Enable break at least 12 bit times
+#define BIT_8      0x00000001  // If set 8 bit else 7 bits
+
+// MCR Register
+#define UART1_RTS  0x00000002  // Inverse of RTS iuput
+
+// LSR Register
+#define UART1_TXIDLE   0x00000040  // Transmitter Idle
+#define UART1_TXEMPTY  0x00000020  // Transmitter empty
+#define UART1_RO       0x00000002  // Receiver overrun
+#define UART1_DR       0x00000001  // Data ready
+
+// MSR Register
+#define UART1_CTS      0x00000020  // CTS status
+
+// CNTL
+#define CTS_ASSERT_LV  0x00000080  // CTS assert level auto flow polartiy
+#define RTS_ASSERT_LV  0x00000040  // RTS assert level auto flow polartiy
+#define CTS_ENABLE     0x00000008  // Enable transmit auto flow control using CTS
+#define RTS_ENABLE     0x00000004  // Enablle receive autoflow using RTS
+#define TX_ENABLE      0x00000002  // enable mini UART Transmitter
+#define RX_ENABLE      0x00000001  // Receive enablke
+
+#endif

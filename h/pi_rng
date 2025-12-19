@@ -1,0 +1,14 @@
+#ifndef PI_RNG_H
+#define PI_RNG_H
+
+#include <stdint.h>
+
+struct RNGSTR
+{
+    uint32_t RNG_CRTL	   ;
+    uint32_t RNG_STATUS	   ;
+    uint32_t RNG_DATA	   ;
+    uint32_t RNG_INT_MASK  ;    
+}
+
+#endif

@@ -1,0 +1,50 @@
+#ifndef PI_DMA_H
+#define PI_DMA_H
+
+#include <stdint.h>
+
+struct DMASTR
+{
+    uint32_t DMA_CS;  // 0x0000
+
+
+}
+
+/* DMA Peripherals */
+enum
+{
+    DREQ,
+    DSI,
+    PCM_TX.
+    PCM_RX,
+    SMI,
+    PWM,
+    SPI_TX,
+    SPI_RX,
+    BSC_SPI_SLAVE_TX,
+    BSC_SPI_SLAVE_RX,
+    UNUSED,
+    E_MMC,
+    UART_TX,
+    SD_HOST,
+    UART_RX,
+    DSI,
+    SLIMBUS_MCTX,
+    HDMI,
+    SLIMBUS_MCRX,
+    SLIMBUS_DC0,
+    SLIMBUS_DC1,
+    SLIMBUS_DC2,
+    SLIMBUS_DC3,
+    SLIMBUS_DC4,
+    SCALERFIFO0,
+    SCALERFIFO1,
+    SCALERFIFO2,
+    SLIMBUS_DC5,
+    SLIMBUS_DC6,
+    SLIMBUS_DC7,
+    SLIMBUS_DC8,
+    SLIMBUS_DC9
+};
+
+#endif

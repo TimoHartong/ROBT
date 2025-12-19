@@ -1,0 +1,166 @@
+#ifndef PI_PL11_H
+#define PI_PL11_H
+
+#include <stdint.h>
+
+struct PL11STR
+{
+    uint32_t UART0_DR           ;  // 0x0000
+    uint32_t RSRECR             ;  // 0x0004
+    uint32_t PL11STR[4]         ;  // Filler
+    uint32_t UART0_FR           ;  // 0x0018
+    uint32_t PL11STR1           ;  // Filler
+    uint32_t UART0_ILPR         ;  // 0x0020 (Not in use )
+    uint32_t UART0_IBRD         ;  // 0x0024 Integer baud rate divisor
+    uint32_t UART0_FBRD         ;  // 0x0028 Fractional baud rate divisor
+    uint32_t UART0_LCRH         ;  // 0x002C Line Control register
+    uint32_t UART0_CR           ;  // 0x0030 Control register
+    uint32_t UART0_IFLS         ;  // 0x0034 Interrupt FIFO level select register
+    uint32_t UART0_IMSC         ;  // 0x0038
+    uint32_t RIS                ;  // 0x003C
+    uint32_t MIS                ;  // 0x0040
+    uint32_t UART0_ICR          ;  // 0x0044
+    uint32_t DMACR              ;  // 0x0048
+    uint32_t PL11STR2[0xd]      ;  // Filler
+    uint32_t ITCR               ;  // 0x0080
+    uint32_t ITIP               ;  // 0x0084
+    uint32_t ITOP               ;  // 0x0088
+    uint32_t TDR                ;  // 0x008C
+};
+
+// DR bits      0x0000
+#define OE    0x00000800   // Overrun error
+#define BE    0x00000400   // Break Error
+#define PE    0x00000200   // Paritiy error
+#define FE    0x00000100   // Framing error
+
+// FR Register  0x0018
+#define RI    0x00000100   // Unsupported write 0 , read:x
+#define TXFE  0x00000080   // Transmit FIFO empty
+#define RXFF  0x00000040   // Receive FIFO Full
+#define TXFF  0x00000020   // Transmit FIFI full
+#define RXFE  0x00000010   // Receive FIFO empty
+#define BUSY  0x00000008   // UART busy
+#define DCD   0x00000004   // Unsupported write 0 , read:x
+#define DSR   0x00000002   // Unsupported write 0 , read:x
+#define CTS   0x00000001   // inverse of CTS input
+
+
+// LCRH register 0x002c
+#define SPS   0x00000080   // SPS
+#define FEN   0x00000010   // Enable FIFOs
+#define STP2  0x00000008   // two stop bits
+#define EPS   0x00000004   // Even partity
+#define PEN   0x00000002   // Parity enable
+#define BRK   0x00000001   // Send break
+
+#define BITS_5 0x00000000
+#define BITS_6 1 << 5
+#define BITS_7 1 << 6
+#define BITS_8 3 << 5
+
+
+// CR Register   0x0030
+#define CTSEN  0x00008000   // CTS Hw enable
+#define RTSEN  0x00004000   // RTS Hw enable
+#define OUT2   0x00002000   // Unsupported write 0 , read:x
+#define OUT1   0x00001000   // Unsupported write 0 , read:x
+#define RTS    0x00000800   // RTS
+#define DTR    0x00000400   // Unsupported write 0 , read:x
+#define RXE    0x00000200   // RX enable
+#define TXE    0x00000100   // TX enable
+#define LBE    0x00000080   // Loopback enable
+#define SIRLP  0x00000004   // Unsupported write 0 , read:x
+#define SIREN  0x00000002   // Unsupported write 0 , read:x
+#define UARTEN 0x00000001   // UART Enable
+
+// IFLS register  0x0034
+
+enum
+{
+   FIFO_18,       // FIFO 1/8
+   FIFO_14,       // FIFO 1/4
+   FIFO_12,       // FIFO 1/2
+   FIFO_34,       // FIFO 3/4
+   FIFO_78        // FIFO 7/8
+};
+
+#define RXIFSEL  3
+
+// IMSC Register 0x0038
+// 1 = Set interrupt mask, 0 = clears interrupt mask
+#define OEIM     0x00000400   // Overrun  error interrupt mask
+#define BEIM     0x00000200   // Break error interrupt mask
+#define PEIM     0x00000100   // Parity error interrupt mask
+#define FEIM     0x00000080   // Framing error interrupt mask
+#define RTIM     0x00000040   // Receive timeout interrupt mask
+#define TXIM     0x00000020   // Transmit interrupt mask
+#define RXIM     0x00000010   // Receive interrupt mask
+#define DSRMIM   0x00000008   // Unsupported write 0 , read:x
+#define DCDMIM   0x00000004   // Unsupported write 0 , read:x
+#define CTSMIM   0x00000002   // nUARTCTS modem interrupt mask
+#define RIMIM    0x00000001   // Unsupported write 0 , read:x
+
+// RIS Raw interrupt status register
+#define OERIS    0x00000400   // Overrun error
+#define BERIS    0x00000200   // Break error in
+#define PERIS    0x00000100   // Parity error
+#define FERIS    0x00000080   // Framing error
+#define RTRIS    0x00000040   // Receive timeout
+#define TXRIS    0x00000020   // Transmit interrupt
+#define RXRIS    0x00000010   // Receive interrupt
+#define DSRRIS   0x00000008   // Unsupported write 0 , read:x
+#define DCDRIS   0x00000004   // Unsupported write 0 , read:x
+#define CTSRIS   0x00000002   // nUARTCTS modem
+#define RIRIS    0x00000001   // Unsupported write 0 , read:x
+
+// MIS Resister Masked interupt status register 0x0040
+#define OEMIS    0x00000400   // Overrun error
+#define BEMIS    0x00000200   // Break error in
+#define PEMIS    0x00000100   // Parity error
+#define FEMIS    0x00000080   // Framing error
+#define RTMIS    0x00000040   // Receive timeout
+#define TXMIS    0x00000020   // Transmit interrupt
+#define RXMIS    0x00000010   // Receive interrupt
+#define DSRMIS   0x00000008   // Unsupported write 0 , read:x
+#define DCDMIS   0x00000004   // Unsupported write 0 , read:x
+#define CTSMIS   0x00000002   // nUARTCTS modem
+#define RIMIS    0x00000001   // Unsupported write 0 , read:x
+
+// ICR Interrupt clear register
+#define OEIC     0x00000400   // Overrun error
+#define BEIC     0x00000200   // Break error in
+#define PEIC     0x00000100   // Parity error
+#define FEIC     0x00000080   // Framing error
+#define RTIC     0x00000040   // Receive timeout
+#define TXIC     0x00000020   // Transmit interrupt
+#define RXIC     0x00000010   // Receive interrupt
+#define DSRIC    0x00000008   // Unsupported write 0 , read:x
+#define DCDIC    0x00000004   // Unsupported write 0 , read:x
+#define CTSIC    0x00000002   // nUARTCTS modem
+#define RIIC     0x00000001   // Unsupported write 0 , read:x
+
+// DMACR Register not supported
+#define DMAONERR  0x00000004
+#define TXDMAE    0x00000002
+#define RXDMAE    0x00000001
+
+// ITCR Test control register
+#define ITCR1     0x00000002  // Test FIFO enabvle
+#define ITCR0     0x00000001  // Integration test enable
+
+// ITIP Register
+#define ITIP3     0x00000008  // Value of nUARTCTS
+#define ITIP0     0x00000001  // Value of UARTRXD
+
+// ITOP register
+#define ITOP11    0x00000800
+#define ITOP10    0x00000400
+#define ITOP9     0x00000200
+#define ITOP8     0x00000100
+#define ITOP7     0x00000080
+#define ITOP6     0x00000040
+#define ITOP3     0x00000004  // Write value to nUARTRTS
+#define ITOP0     0x00000001  // Write value to UARTTXD
+
+#endif

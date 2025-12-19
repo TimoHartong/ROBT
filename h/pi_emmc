@@ -1,0 +1,13 @@
+#ifndef PI_EMMC_H
+#define PI_EMMC_H
+
+#include <stdint.h>
+
+struct EMMCSTR
+{
+    uint32_t ARG2;  // 0x0000 ACMD23 Argument
+};
+
+
+
+#endif

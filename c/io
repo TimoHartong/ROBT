@@ -1,0 +1,371 @@
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include "io.h"
+#include "fb.h"
+#include "PI3MEM.h"
+#include "ros_utils.h"
+//#include "pi_pl11.h"
+#include "pi_gpio.h"
+#include "pi_miniuart.h"
+
+// GPIO
+static struct GPIOSTR* pGPIO = NULL;
+static struct MiniUART* pUART = NULL;
+
+enum
+{
+    GPIO_FUNCTION_IN   = 0,
+    GPIO_FUNCTION_OUT  = 1,
+    GPIO_FUNCTION_ALT0 = 4,
+    GPIO_FUNCTION_ALT1 = 5,
+    GPIO_FUNCTION_ALT2 = 6,
+    GPIO_FUNCTION_ALT3 = 7,
+    GPIO_FUNCTION_ALT4 = 3,
+    GPIO_FUNCTION_ALT5 = 2
+};
+
+enum
+{
+    Pull_None = 0,
+    Pull_Down = 2,
+    Pull_Up = 1
+};
+
+// Function to init pointers to the pointers to the IO Structs
+static void InitIOPointers(void)
+{
+    if ( pGPIO == NULL )
+        pGPIO = (struct GPIOSTR*) IOToUser(GPIO, sizeof(struct GPIOSTR) * 4);
+
+    if ( pUART == NULL )
+        pUART = (struct MiniUART*) IOToUser(AUXIRQ, sizeof(struct MiniUART) * 4 );
+}
+
+//void mmio_write(long reg, unsigned int val)
+//{
+//    *(volatile unsigned int *)reg = val;
+//}
+
+//unsigned int mmio_read(long reg)
+//{
+//    return *(volatile unsigned int *)reg;
+//}
+
+/* pin_number to start at 0 */
+/* In the orginal a value was given but 0 gives no effect */
+unsigned int gpio_set(unsigned int pin_number)
+{
+    if ( pGPIO == NULL )
+        InitIOPointers();
+
+    if ( pin_number > 31 )
+        pGPIO->GPSET1 = 1 << (pin_number % 32);
+    else
+        pGPIO->GPSET0 = 1 <<  pin_number;
+
+    return 1;
+}
+
+/* pin_number to start at 0 */
+/* In the orginal a value was given but 0 gives no effect */
+unsigned int gpio_clear(unsigned int pin_number)
+{
+    if ( pGPIO == NULL )
+        InitIOPointers();
+
+    if ( pin_number > 31 )
+        pGPIO->GPCLR1 = 1 << (pin_number % 32) ;
+    else
+        pGPIO->GPCLR0 = 1 << pin_number;
+
+    return 1;
+}
+
+/* pin_number to start at 0 */
+unsigned int gpio_pull(unsigned int pin_number, unsigned int value)
+{
+    if ( pGPIO == NULL )
+        InitIOPointers();
+
+    // Step 1. Tell what we want to do
+    pGPIO->GPPUD = value;
+    msleep(1);
+    // Step 2. Execute the request
+    if ( pin_number > 31 )
+    {
+        pGPIO->GPPUDCLK1 = 1 << ( pin_number % 32 ) ;
+        msleep(1);
+        pGPIO->GPPUD = 0;
+        msleep(1);
+        pGPIO->GPPUDCLK1 = 0;
+    }
+    else
+    {
+        pGPIO->GPPUDCLK0 = 1 << pin_number;
+        msleep(1);
+        pGPIO->GPPUD = 0;
+        msleep(1);
+        pGPIO->GPPUDCLK0 = 0;
+    }
+
+    return 1;
+}
+
+static unsigned int gpio_function(unsigned int pin_number, unsigned int value)
+{
+    unsigned int shift = (pin_number % 10) * 3;
+    unsigned int sel = pin_number / 10;
+    uint32_t old_value = 0;
+
+    if ( pGPIO == NULL )
+        InitIOPointers();
+
+    switch(sel)
+    {
+      case 0:
+         //printf("select 0 with value %d and shift %d \n ",value,shift);
+          old_value = pGPIO->GPSEL0;;
+          pGPIO->GPSEL0 = old_value | (value << shift );
+          break;
+      case 1:
+      //printf("select 1 with value %d and shift %d \n ",value,shift);
+          old_value = pGPIO->GPSEL1;
+          pGPIO->GPSEL1 = old_value | (value << shift);
+          break;
+      case 2:
+      //printf("select 2 with value %d and shift %d \n ",value,shift);
+          old_value = pGPIO->GPSEL2;
+          pGPIO->GPSEL2 = old_value | (value << shift);
+          break;
+      case 3:
+          old_value = pGPIO->GPSEL3;
+          pGPIO->GPSEL3 = old_value | (value << shift);
+          break;
+      case 4:
+          old_value = pGPIO->GPSEL4;
+          pGPIO->GPSEL4 = old_value | (value << shift);
+          break;
+      case 5:
+          old_value = pGPIO->GPSEL5;
+          pGPIO->GPSEL5 = old_value | (value << shift);
+          break;
+
+    }
+
+    return 1;
+}
+
+/* pin_number to start at 0 */
+void gpio_useAsAlt0(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_ALT0);
+}
+
+/* pin_number to start at 0 */
+void gpio_useAsAlt1(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_ALT1);
+}
+
+/* pin_number to start at 0 */
+void gpio_useAsAlt2(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_ALT2);
+}
+
+/* pin_number to start at 0 */
+void gpio_useAsAlt3(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_ALT3);
+}
+
+/* pin_number to start at 0 */
+void gpio_useAsAlt4(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_ALT3);
+}
+
+/* pin_number to start at 0 */
+void gpio_useAsAlt5(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_ALT5);
+}
+
+void gpio_useAsOut(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_OUT);
+}
+
+void gpio_useAsInWithoutPU(unsigned int pin_number)
+{
+    gpio_pull(pin_number, Pull_None);
+    gpio_function(pin_number, GPIO_FUNCTION_IN);
+}
+
+
+
+
+void gpio_setPinOutputBool(unsigned int pin_number, unsigned int onOrOff)
+{
+    switch( onOrOff )
+    {
+      case 0:
+           gpio_clear(pin_number);
+           break;
+      case 1:
+           gpio_set(pin_number);
+           break;
+    }
+}
+
+// UART
+/* Taken from old enum */
+
+#define AUX_UART_CLOCK 500000000
+#define UART_MAX_QUEUE 16 * 1024
+
+#define AUX_MU_BAUD(baud) ((AUX_UART_CLOCK/(baud*8))-1)
+
+static unsigned char uart_output_queue[UART_MAX_QUEUE];
+static unsigned int uart_output_queue_write = 0;
+static unsigned int uart_output_queue_read = 0;
+
+
+void uart_init(void)
+{
+    InitIOPointers();
+
+    pUART->AUX_ENBALES     = 1    ; // Enable UART 1
+    pUART->AUX_MU_IER_REG  = 0    ; // No interrupts
+    pUART->AUX_MU_CNTL_REG = 0    ; //
+    pUART->AUX_MU_LCR_REG  = 3    ; // 8 bits
+    pUART->AUX_MU_MCR_REG  = 0    ; // RTS line high
+    pUART->AUX_MU_IER_REG  = 0    ; // No interrupts
+    pUART->AUX_MU_IIR_REG  = 0xC6 ; // Disable interrupts
+    pUART->AUX_MU_BAUD_REG = AUX_MU_BAUD(115200) ;
+    //mmio_write(AUX_ENABLES, 1); //enable UART1
+    //mmio_write(AUX_MU_IER_REG, 0);
+    //mmio_write(AUX_MU_CNTL_REG, 0);
+    //mmio_write(AUX_MU_LCR_REG, 3); //8 bits
+    //mmio_write(AUX_MU_MCR_REG, 0);
+    //mmio_write(AUX_MU_IER_REG, 0);
+    //mmio_write(AUX_MU_IIR_REG, 0xC6); //disable interrupts
+    //mmio_write(AUX_MU_BAUD_REG, AUX_MU_BAUD(115200));
+    gpio_useAsAlt5(14);
+    gpio_useAsAlt5(15);
+    //mmio_write(AUX_MU_CNTL_REG, 3); //enable RX/TX
+    pUART->AUX_MU_CNTL_REG  = 3; //enable RX/TX
+}
+
+static unsigned int uart_isOutputQueueEmpty(void)
+{
+    return uart_output_queue_read == uart_output_queue_write;
+}
+
+unsigned int uart_isReadByteReady(void)
+{
+    //return mmio_read(AUX_MU_LSR_REG) & 0x01;
+    return pUART->AUX_MU_LSR_REG & UART1_DR;
+}
+
+static unsigned int uart_isWriteByteReady(void)
+{
+    //return mmio_read(AUX_MU_LSR_REG) & 0x20;
+    return pUART->AUX_MU_LSR_REG & UART1_TXEMPTY;
+}
+
+unsigned char uart_readByte(void)
+{
+    while (!uart_isReadByteReady());
+    return (unsigned char) pUART->AUX_MU_IO_REG;
+    //return (unsigned char)mmio_read(AUX_MU_IO_REG);
+}
+
+void uart_writeByteBlockingActual(unsigned char ch)
+{
+//    while (!uart_isWriteByteReady());
+    printf("%s",ch);
+    pUART->AUX_MU_IO_REG = ch ;
+    //mmio_write(AUX_MU_IO_REG, (unsigned int)ch);
+}
+
+void uart_loadOutputFifo(void)
+{
+    while (!uart_isOutputQueueEmpty() && uart_isWriteByteReady())
+    {
+        uart_writeByteBlockingActual(uart_output_queue[uart_output_queue_read]);
+        uart_output_queue_read = (uart_output_queue_read + 1) & (UART_MAX_QUEUE - 1); // Don't overrun
+    }
+}
+
+void uart_writeByteBlocking(unsigned char ch)
+{
+    unsigned int next = (uart_output_queue_write + 1) & (UART_MAX_QUEUE - 1); // Don't overrun
+
+    while (next == uart_output_queue_read)
+        uart_loadOutputFifo();
+
+    uart_output_queue[uart_output_queue_write] = ch;
+    uart_output_queue_write = next;
+}
+
+void uart_writeText(char *buffer)
+{
+    while (*buffer) {
+       if (*buffer == '\n') uart_writeByteBlockingActual('\r');
+       uart_writeByteBlockingActual(*buffer++);
+    }
+}
+
+void uart_drainOutputQueue(void)
+{
+    while (!uart_isOutputQueueEmpty()) uart_loadOutputFifo();
+}
+
+void uart_update(void)
+{
+    uart_loadOutputFifo();
+
+    if (uart_isReadByteReady())
+    {
+       unsigned char ch = uart_readByte();
+       if (ch == '\r') uart_writeText("\n"); else uart_writeByteBlocking(ch);
+    }
+}
+
+void uart_hex(unsigned int d)
+{
+    unsigned int n;
+    int c;
+    for(c=28;c>=0;c-=4) {
+        // get highest tetrad
+        n= (d>>c) & 0xF;
+        // 0-9 => '0'-'9', 10-15 => 'A'-'F'
+        n+=n>9?0x37:0x30;
+
+        uart_writeByteBlockingActual(n);
+    }
+}
+
+void uart_byte(unsigned char b)
+{
+    unsigned int n;
+    int c;
+    for(c=4;c>=0;c-=4) {
+        // get highest tetrad
+        n= (b>>c) & 0xF;
+        // 0-9 => '0'-'9', 10-15 => 'A'-'F'
+        n+= n>9?0x37:0x30;
+
+        uart_writeByteBlockingActual(n);
+    }
+    uart_writeByteBlockingActual(' ');
+}

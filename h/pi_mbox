@@ -1,0 +1,201 @@
+#ifndef PI_MBOX_H
+#define PI_MBOX_H
+
+#include <stdint.h>
+
+//extern volatile uint32_t mbox[36];
+
+#define MBOX_REQUEST 0
+
+/* Channels */
+
+struct MBOXSTR
+{
+    uint32_t mbox_read     ; // 0x000
+    uint32_t mbox_fill[3]  ; // Filler
+    uint32_t mbox_poll     ; // 0x010
+    uint32_t mbox_sender   ; // 0x014
+    uint32_t mbox_status   ; // 0x018
+    uint32_t mbox_config   ; // 0x01C
+    uint32_t mbox_write    ; // 0x020
+};
+
+enum
+{
+  MBOX_CH_POWER,     // 0. Power mangement
+  MBOX_CH_FB,        // 1. Frame buffer
+  MBOX_CH_VUART,     // 2. Virtual UART
+  MBOX_CH_VCHIIQ,    // 3. VCHIOQ
+  MBOX_CH_LEDS,      // 4. LED's
+  MBOX_CH_BTNS,      // 5. Buttons
+  MBOX_CH_TOUCH,     // 6. Touch screen
+  MBOX_CH_COUNT,
+  MBOX_CH_PROP,      // 8. Property tags AMR -> VC
+  MBOX_CH_VCARM     //  9. Property tags VC -> ARM
+};
+
+/* Tags */
+/* Tags (ARM to VC ) */
+#define  MBOX_TAG_LAST                0x00000000
+#define  MBOX_TAG_FW_REV              0x00000001      // Get firmware version       - 4
+#define  MBOX_TAG_BOARD_MODEL         0x00010001      // Board model                - 4
+#define  MBOX_TAG_BOARD_REV           0x00010002      // Board revision             - 4
+#define  MBOX_TAG_MAC                 0x00010003      // MAC addres                 - 6
+#define  MBOX_TAG_SERIAL              0x00010004      // Board serial               - 8
+#define  MBOX_TAG_ARM_MEM             0x00010005      // ARM Memory information     - 8
+#define  MBOX_TAG_VC_MEM              0x00010006      // VC Memory information      - 8
+#define  MBOX_TAG_GETCLOCKS           0x00010007      // Get clocks                 - verious
+#define  MBOX_TAG_GETCOMMAND          0x00050001      // Command line string        - varible
+#define  MBOX_TAG_DMA                 0x00060001      // DMA channels status        - 4
+/* Power state */
+#define  MBOX_TAG_GET_PWR             0x00020001       // Get power state           - 8      4
+#define  MBOX_TAG_GET_TIMING          0x00020002       // Get timing                - 8      4
+#define  MBOX_TAG_SET_PWR             0x00028001       // Set power state           - 8      8
+/* Clock states */
+#define  MBOX_TAG_GET_CLK_STATE       0x00030001       // Get clock state           - 8      4
+#define  MBOX_TAG_SET_CLK_STATE       0x00038001       // Set clock state           - 8      8
+#define  MBOX_TAG_GET_CLK_RATE        0x00030002       // Get clock rate            - 4      8
+#define  MBOX_TAG_GET_LED_STATUS      0x00030041       // Get onbooard LED status
+#define  MBOX_TAG_TST_LED_STATUS      0x00034041       // Test onboard LED status
+#define  MBOX_TAG_SET_LED_STATUS      0x00038041       // Test onboard LED status
+#define  MBOX_TAG_GET_CLK_RATE_MEAS   0x00030047       // Get measure clock rate
+#define  MBOX_TAG_SET_CLK_RATE        0x00038002       // Set clock rate
+#define  MBOX_TAG_GET_MAX_CLK_RATE    0x00030004       // Get max clock rate
+#define  MBOX_TAG_GET_MIN_CLK_RATE    0x00030007       // Get min clock rate
+#define  MBOX_TAG_GET_TURBO           0x00030009       // Get Turbo
+#define  MBOX_TAG_SET_TURBO           0x00038009       // Set Turbo
+#define  MBOX_TAG_GET_VOLTAGE         0x00030003       // Get voltage
+#define  MBOX_TAG_SET_VOLTAGE         0x00038003       // Set voltage
+#define  MBOX_TAG_MAX_VOLTAGE         0x00030005       // Get maximum voltage
+#define  MBOX_TAG_MIN_VOLTAGE         0x00030008       // Get minumum voltage
+#define  MBOX_TAG_GET_TEMP            0x00030006       // Get temperature
+#define  MBOX_TAG_GET_MAX_TEMP        0x0003000a       // Get max temperature
+/* Memmory allocation in GPA */
+#define  MBOX_TAG_ALLOCATE_MEM        0x0003000c       // Allocate memory
+#define  MBOX_TAG_LOCK_MEM            0x0003000d       // Lock memory
+#define  MBOX_TAG_UNLOCK_MEM          0x0003000e       // Unlock
+#define  MBOX_TAG_RELEASE_MEM         0x0003000f       // Allocate memory
+#define  MBOX_TAG_EXECUTE_CODE        0x00030010       // Execute code
+#define  MBOX_TAG_GET_DISPMANX        0x00030014       // Get Dispmanx resource memory handle
+#define  MBOX_TAG_GET_EDID_BLK        0x00030020       // Get EDID Block
+/* Frame buffer */
+#define  MBOX_TAG_ALLOC_BUFF          0x00040001       // Allocate buffer
+#define  MBOX_TAG_RELEASE_BUFF        0x00048001       // Release buffer
+#define  MBOX_TAG_BLANK_SCR           0x00040002       // Blank screen
+#define  MBOX_TAG_GET_WIDTH_HGT       0x00040003       // Get physical display width / height
+#define  MBOX_TAG_TST_WIDTH_HGT       0x00044003       // Test physical display width / height
+#define  MBOX_TAG_SET_WIDTH_HGT       0x00048003       // Set physical display width / height
+#define  MBOX_TAG_GET_VIRT_WIDTH_HGT  0x00040004       // Get virtual physical display width / height
+#define  MBOX_TAG_TST_VIRT_WIDTH_HGT  0x00044004       // Test virtual (buffer ) width / height
+#define  MBOX_TAG_SET_VIRT_WIDTH_HGT  0x00048004       // Set virtual (buffer ) width / height
+#define  MBOX_TAG_GET_DEPTH           0x00040005       // Get colour depth
+#define  MBOX_TAG_TST_DEPTH           0x00044005       // Test colour depth
+#define  MBOX_TAG_SET_DEPTH           0x00048005       // Test colour depth
+#define  MBOX_TAG_GET_PIXEL           0x00040006       // Get pixel order
+#define  MBOX_TAG_TST_PIXEL           0x00044006       // Test pixel order
+#define  MBOX_TAG_SET_PIXEL           0x00048006       // Set pixel order
+#define  MBOX_TAG_GET_ALPHA           0x00040007       // Get pixel order
+#define  MBOX_TAG_TST_ALPHA           0x00044007       // Test pixel order
+#define  MBOX_TAG_SET_ALPHA           0x00048007       // Set pixel order
+#define  MBOX_TAG_GET_PITCH           0x00040008       // Get pitch
+#define  MBOX_TAG_GET_VIRT_OFFSET     0x00040009       // Get virtual offset
+#define  MBOX_TAG_TST_VIRT_OFFSET     0x00044009       // Test virtual offset
+#define  MBOX_TAG_SET_VIRT_OFFSET     0x00048009       // Set virtual offset
+#define  MBOX_TAG_GET_OVERSCAN        0x0004000a       // Get overscan
+#define  MBOX_TAG_TST_OVERSCAN        0x0004400a       // Test overscan
+#define  MBOX_TAG_SET_OVERSCAN        0x0004800a       // Set overscan
+#define  MBOX_TAG_GET_PALLETTE        0x0004000b       // Get Pallette
+#define  MBOX_TAG_TST_PALLETTE        0x0004400b       // Test Pallette
+#define  MBOX_TAG_SET_PALLETTE        0x0004800b       // Set Pallette
+#define  MBOX_TAG_SET_CUR_INFO        0x00008010       // Set cursor info
+#define  MBOX_TAG_SET_CUR_STATE       0x00008011       // Set cursor state
+#define  MBOX_TAG_SET_SCR_GAMMA       0x00008012       // Set screen gamma
+
+//struct TagSize
+//{
+//  uint32_t   tagId;
+//  uint32_t   Request_Size;
+//  uint32_t   Resp_Size;
+//};
+
+
+//struct TagSize TagInfo[] =
+//{
+//  { MBOX_TAG_FW_REV            , 4, 0 },
+//  { MBOX_TAG_BOARD_MODEL       , 4, 0 },
+//  { MBOX_TAG_GET_CLK_RATE_MEAS , 8 ,4 },
+//  { MBOX_TAG_GET_MAX_CLK_RATE  , 8, 4 },
+// { MBOX_TAG_GET_MIN_CLK_RATE  , 8, 4 }
+//};
+
+/* Mail box communication */
+#define MBOX_RESPONSE               0x80000000
+#define MBOX_FULL                   0x80000000
+#define MBOX_EMPTY                  0x40000000
+
+
+/* Mem allocation flags */
+#define MEM_FLAG_DISCARDABLE        0x00000001
+#define MEM_FLAG_ZERO               0x00000010
+#define MEM_FLAG_NO_INIT            0x00000020
+#define MEM_FLAG_HINT_PERMALOCK     0x00000040
+
+struct MEMINFO
+{
+    uint32_t base_addr ;
+    uint32_t size;
+};
+
+/* Unique device ID's */
+enum
+{
+    SD_CARD,
+    DEV_UART0,
+    DEV_UART1,
+    USB_HCD,
+    I2C0,
+    I2C1,
+    I2C2,
+    SPI,
+    CCP2TX,
+    UNKNOWN1,
+    UNKNOWN2
+};
+
+/* Unique clock ID's */
+enum
+{
+    CLS_RESV,   // Reserved
+    CLK_EMMC,
+    CLK_UART,
+    CLK_ARM,
+    CLK_CORE,
+    CLK_V3D,
+    CLK_H264,
+    CLK_ISP,
+    CLK_SDRAM,
+    CLK_PIXEL,
+    CLK_PWM,
+    CLK_HEVC,
+    CLK_EMMC2,
+    CLK_M2MC,
+//    PIXEL,
+    CLK_BVB
+};
+
+/* Unique voltage ID's, RESERVED is already defined so start with 1 */
+enum
+{
+//    CORE = 1,
+    SDRAM_C = 2,
+    SDRAM_P,
+    SDRAM_I,
+};
+
+/* Power state */
+#define PWR_STATE  0x00000001  // 0 = off, 1 = on
+#define DEV_EXISTS 0x00000002  // 0 = device exists , 1 = device does not exists
+
+uint32_t mbox_call(uint8_t ch);
+
+#endif

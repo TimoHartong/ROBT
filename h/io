@@ -1,0 +1,29 @@
+#ifndef IO_H
+#define IO_H
+
+unsigned int gpio_set(unsigned int pin_number);
+unsigned int gpio_clear(unsigned int pin_number);
+unsigned int gpio_pull(unsigned int pin_number, unsigned int value);
+void gpio_useAsAlt0(unsigned int pin_number);
+void gpio_useAsAlt1(unsigned int pin_number);
+void gpio_useAsAlt2(unsigned int pin_number);
+void gpio_useAsAlt3(unsigned int pin_number);
+void gpio_useAsAlt4(unsigned int pin_number);
+void gpio_useAsAlt5(unsigned int pin_number);
+void gpio_useAsOut(unsigned int pin_number);
+void gpio_useAsInWithoutPU(unsigned int pin_number);
+void gpio_setPinOutputBool(unsigned int pin_number, unsigned int onOrOff);
+void uart_init(void);
+void uart_writeText(char *buffer);
+void uart_loadOutputFifo(void);
+unsigned char uart_readByte(void);
+unsigned int uart_isReadByteReady(void);
+void uart_writeByteBlockingActual(unsigned char ch);
+void uart_update(void);
+void mmio_write(long reg, unsigned int val);
+unsigned int mmio_read(long reg);
+void gpio_useAsAlt3(unsigned int pin_number);
+void uart_hex(unsigned int d);
+void uart_byte(unsigned char b);
+
+#endif

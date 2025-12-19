@@ -1,0 +1,17 @@
+#ifndef PI_SYSTMR_H
+#define PI_SYSTMR_H
+
+#include <stdint.h>
+
+struct SYSTMRSTR
+{
+    uint32_t st_cs  ;     // 0x0000
+    uint32_t st_clo ;     // 0x0004
+    uint32_t st_chi ;     // 0x0008
+    uint32_t st_c0  ;     // 0x000C
+    uint32_t st_c1  ;     // 0x0010
+    uint32_t st_c2  ;     // 0x0014
+    uint32_t st_c3  ;     // 0x0018
+};
+
+#endif

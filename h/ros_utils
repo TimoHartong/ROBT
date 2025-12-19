@@ -1,0 +1,8 @@
+#ifndef ROSUTILS_H
+#define ROSUTILS_H
+#include <stdint.h>
+
+int32_t IOToUser(uint32_t nIOAddr,uint32_t size);
+uint32_t UARTClkFreq(void);
+
+#endif
