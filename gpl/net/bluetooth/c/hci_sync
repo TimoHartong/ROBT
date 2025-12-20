@@ -7,11 +7,6 @@
  */
 
 //#include <linux/property.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include "types.h"
-#include "gplfix.h"
 
 #include "net/bluetooth/bluetooth.h"
 #include "net/bluetooth/hci_core.h"
@@ -5002,7 +4997,7 @@ static int hci_dev_setup_sync(struct hci_dev *hdev)
 		hdev->dev.parent ? dev_fwnode(hdev->dev.parent) : NULL;
 	int ret = 0;
 	bool invalid_bdaddr;
-	size_t i;
+//	size_t i;
 
 	if (!hci_dev_test_flag(hdev, HCI_SETUP) &&
 	    !test_bit(HCI_QUIRK_NON_PERSISTENT_SETUP, (u32) hdev->quirks))
@@ -5236,7 +5231,7 @@ done:
 /* This function requires the caller holds hdev->lock */
 static void hci_pend_le_actions_clear(struct hci_dev *hdev)
 {
-	struct hci_conn_params *p;
+//	struct hci_conn_params *p;
 
 //	list_for_each_entry(p, &hdev->le_conn_params, list) {
 //		hci_pend_le_list_del_init(p);
@@ -5324,7 +5319,7 @@ int hci_dev_close_sync(struct hci_dev *hdev)
 		cancel_delayed_work(&hdev->service_cache);
 
 	if (hci_dev_test_flag(hdev, HCI_MGMT)) {
-		struct adv_info *adv_instance;
+//		struct adv_info *adv_instance;
 
 		cancel_delayed_work_sync(&hdev->rpa_expired);
 // FIXME

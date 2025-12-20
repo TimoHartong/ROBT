@@ -3,8 +3,36 @@
 
 #include <stdlib.h>
 
+#include "linux/errno.h"
+#include "gpl/include/net/dropreason.h"
+
+
+
+
+// Make sure all the lib is compiled swithes skbuff.h
+#define CONFIG_BT_FEATURE_DEBUG             1
+#define __KERNEL__                          1
+#define CONFIG_NF_CONNTRACK                 0
+#define CONFIG_NETFILTER_XT_TARGET_TRACE    0
+#define CONFIG_NF_TABLES                    0
+#define CONFIG_IP_VS                        0
+#define BITS_PER_LONG                       0
+
+// switches hci_core
+#define CONFIG_BT_BREDR                     0
+#define CONFIG_BT_LE                        1
+
+// switched in hci_defugfs
+#define CONFIG_BT_DEBUGFS                   0
+
+// switches in net/bluetooth/smp.h
+#define CONFIG_BT_SELFTEST_SMP              0
+
 /*include/linux/bitops.h */
 #define BIT(nr)    (1UL << (nr))
+
+
+#define MSG_DONTWAIT 0x80;
 // gfp.h
 #define __GFP_WAIT          0x10
 #define __GFP_IO            0x40
@@ -18,10 +46,7 @@
 #define EPERM                1
 #define EBUSY                16
 #define ENOSPC               28  /* No space on device */
-#define ENOENT               102   // Fixme can not find the actual numer
-#define EADDRNOTAVAIL        49
 #define ERFKILL              132
-#define EALREADY             115
 // include/nolibc/errno.h
 
 #define MAX_ERRNO            4095
@@ -32,9 +57,6 @@
 #define ERESTARTSYS          512   // linux/errno.h
 
 /* include/uapi/asm/errno.h */
-#define ENODATA            86
-#define ENETDOWN           50
-#define ETIMEDOUT          6
 #define ECANCELED          125
 
 #define MSEC_PER_SEC       1000
@@ -46,6 +68,16 @@ typedef int atomic_t;
 // include/linux/err.h
 #define IS_ERR_VALUE(x)     (unsigned long)(void *)(x) >= (unsigned long) -MAX_ERRNO)
 
+/* include/linux/numa.h */
+#define NUMA_NO_NODE (-1)
+/* include/acpi/platvorm/acenv.h */
+typedef char *va_list;
+
+/* include/linux/printk.h */
+struct va_format {
+  const char *fmt;
+  va_list *va;
+};
 
 static inline bool IS_ERR(const void *ptr)
 {
@@ -82,38 +114,39 @@ static inline void *ERR_PTR(long error)
 typedef unsigned int gfp_t;
 
 /* Just a dummy certainly not meant for actual implementation */
-struct sk_buff {
-  struct sk_buff   *next, *prev;
-  uint8_t          *head;  // Buffer start
-  uint8_t          *data;  // Data start
-  uint8_t          *tail;  // Data end
-  uint8_t          *end;  // Buffer end
-  uint32_t         len;   // Data length
-  uint32_t         data_len; // Length of the paged data
-};
+//struct sk_buff {
+//  struct sk_buff   *next, *prev;
+//  uint8_t          *head;  // Buffer start
+//  uint8_t          *data;  // Data start
+//  uint8_t          *tail;  // Data end
+//  uint8_t          *end;  // Buffer end
+//  uint32_t         len;   // Data length
+//  uint32_t         data_len; // Length of the paged data
+//};
 
-struct sk_buff_head {
-  struct sk_buff *next;
-  struct sk_buff *pref;
-};
+//struct sk_buff_head {
+//  struct sk_buff *next;
+//  struct sk_buff *pref;
+//};
 
-struct sk_buff *alloc_skb(unsigned int size, gfp_t priority);
-struct sk_buff *skb_get(struct sk_buff *skb);
-unsigned char *skb_put(struct sk_buff *skb, unsigned int len);
-void *skb_put_data(struct sk_buff *skb, const void *data, unsigned int len);
-int skb_queue_empty(const struct sk_buff_head *list);
-void skb_queue_tail(struct sk_buff_head *list, struct sk_buff *newsk);
-__u32 skb_queue_len(struct sk_buff_head *list_);
-void skb_queue_purge(struct sk_buff_head *list);
-struct sk_buff *skb_peek_tail( struct sk_buff_head *list_ );
-void skb_queue_head_init( struct sk_buff_head *list );
-void skb_queue_splice_tail(struct sk_buff_head *list , struct sk_buff_head *head);
+//static inline void skb_reserve(struct sk_buff *skb, int len);
+//struct sk_buff *alloc_skb(unsigned int size, gfp_t priority);
+//struct sk_buff *skb_get(struct sk_buff *skb);
+//unsigned char *skb_put(struct sk_buff *skb, unsigned int len);
+//void *skb_put_data(struct sk_buff *skb, const void *data, unsigned int len);
+//int skb_queue_empty(const struct sk_buff_head *list);
+//void skb_queue_tail(struct sk_buff_head *list, struct sk_buff *newsk);
+//__u32 skb_queue_len(struct sk_buff_head *list_);
+//void skb_queue_purge(struct sk_buff_head *list);
+//struct sk_buff *skb_peek_tail( struct sk_buff_head *list_ );
+//void skb_queue_head_init( struct sk_buff_head *list );
+//void skb_queue_splice_tail(struct sk_buff_head *list , struct sk_buff_head *head);
 
-static inline void skb_reserve(struct sk_buff *skb, int len)
-{
-  skb->data += len;
-  skb->tail += len;
-}
+//static inline void skb_reserve(struct sk_buff *skb, int len)
+//{
+//  skb->data += len;
+//  skb->tail += len;
+//}
 
 // linux/include/linux/firmware.h
 struct firmware {
@@ -151,7 +184,6 @@ struct dmi_system_id {
 static inline const struct dmi_system_id* dmi_first_match(const struct dmi_system_id *list) { return NULL; }
 
 /*Unknown where defined*/
-void kfree_skb(struct sk_buff *skb);
 //void set_bit(u32 nr, volatile u32 *addr);
 u16 le16_to_cpu(u16 value); // Pi ARM alread little endian
 int snprintf(char *buff, size_t buff_size, const char *format, ... );
@@ -640,5 +672,95 @@ static inline __u16 __be16_to_cpup(const __be16 *p)
 
 /* include/linux/array_size.h */
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0])
+
+/* include/linux/types.h */
+//typedef struct {
+//	int counter;
+//} atomic_t;
+
+#include "linux/refcount_types.h"
+
+/* include/linux/ktime.h */
+/*
+ * ktime_t:
+ *
+ * A single 64-bit variable is used to store the hrtimers
+ * internal representation of time values in scalar nanoseconds. The
+ * design plays out best on 64-bit CPUs, where most conversions are
+ * NOPs and most arithmetic ktime_t operations are plain arithmetic
+ * operations.
+ *
+ */
+union ktime {
+	s64	tv64;
+};
+
+/* include/linux/uio.h */
+
+struct iov_iter {
+	int type;
+	size_t iov_offset;
+	size_t count;
+//	union {
+//		const struct iovec *iov;
+//		const struct kvec *kvec;
+//		const struct bio_vec *bvec;
+//		struct pipe_inode_info *pipe;
+//	};
+	union {
+		unsigned long nr_segs;
+		struct {
+			int idx;
+			int start_idx;
+		};
+	};
+};
+
+bool copy_from_iter_full(void *addr, size_t bytes, struct iov_iter *i);
+//typedef union ktime ktime_t;		/* Kill this */
+
+#include "linux/skbuff.h"
+
+/* linux/net/socket.h */
+
+struct msghdr {
+	void		*msg_name;	/* ptr to socket address structure */
+	int		msg_namelen;	/* size of socket address structure */
+
+	int		msg_inq;	/* output, data left in socket */
+	int             msg_flags;      // keep the compiler happy
+	struct iov_iter   msg_iter;       // keep the compiler happy
+};
+
+struct sock {
+  u32 crap;
+  u32 sk_err;
+  u32 sk_shutdown;
+  u32 priority;
+  u32 sk_priority;
+};
+
+struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+				    int noblock, int *errcode);
+struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+				     unsigned long data_len, int noblock,
+				     int *errcode, int max_page_order);
+
+/*
+ *	Recover an error report and clear atomically
+ */
+
+static inline int sock_error(struct sock *sk)
+{
+	int err;
+	if (!sk->sk_err)
+	   return 0;
+
+	err = sk->sk_err;
+
+//	err = xchg(&sk->sk_err, 0);
+	return -err;
+}
+
 
 #endif
