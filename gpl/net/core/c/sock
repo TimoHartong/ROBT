@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include "gplfix.h"
+
+// It was not in sock.c
+void sock_put(void* sk)
+{
+}
+
+// It was not in sock.c
+void sock_hold(void* sk)
+{
+}
+
+

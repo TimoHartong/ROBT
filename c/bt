@@ -10,7 +10,7 @@
 #include "PI3MEM.h"
 #include "ros_utils.h"
 #include "pi_pl11.h"
-#include "types.h"
+//#include "types.h"
 #include "gplfix.h"
 #include "gpl/include/net/bluetooth/bluetooth.h"
 #include "gpl/include/net/bluetooth/hci.h"

@@ -664,7 +664,7 @@ enum {
 	 * If NETIF_F_TSO_MANGLEID is set it may mangle both inner and outer IDs.
 	 */
 	SKB_GSO_TCP_FIXEDID = 1 << 30,
-	SKB_GSO_TCP_FIXEDID_INNER = 1 << 31,
+	SKB_GSO_TCP_FIXEDID_INNER = 1 << 31,  // The ROOL DDE gives a warning
 };
 
 #if BITS_PER_LONG > 32
@@ -1141,10 +1141,10 @@ static inline bool skb_data_unref(const struct sk_buff *skb,
 
 	bias = skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1;
 
-	if ( shinfo->dataref == bias)
+//	if ( shinfo->dataref == bias)
 //		smp_rmb();
 //	else if (atomic_sub_return(bias, &shinfo->dataref))
-		return false;
+//		return false;
 
 	return true;
 }
@@ -1152,8 +1152,7 @@ static inline bool skb_data_unref(const struct sk_buff *skb,
 void  sk_skb_reason_drop(struct sock *sk, struct sk_buff *skb,
 				      enum skb_drop_reason reason);
 
-static inline void
-kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
+static inline void kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
 {
 	sk_skb_reason_drop(NULL, skb, reason);
 }
@@ -1704,7 +1703,7 @@ static inline void net_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
 /* Release a reference on a zerocopy structure */
 static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy_success)
 {
-	struct ubuf_info *uarg = skb_zcopy(skb);
+//	struct ubuf_info *uarg = skb_zcopy(skb);
 
 //	if (uarg) {
 //		if (!skb_zcopy_is_nouarg(skb))
@@ -4368,7 +4367,7 @@ static inline bool __skb_metadata_differs(const struct sk_buff *skb_a,
 //		break;
 //	default:
 //slow:
-//		return memcmp(a - meta_len, b - meta_len, meta_len);
+//		return memcmp((void*)(a - meta_len), (void*)(b - meta_len), meta_len);
 //	}
 	return diffs;
 }

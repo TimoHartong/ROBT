@@ -82,7 +82,7 @@ struct discovery_state {
 		DISCOVERY_RESOLVING,
 		DISCOVERY_STOPPING,
 	} state;
-	struct list_head	all;	/* All devices found during inquiry */
+	struct list_head	all;	        /* All devices found during inquiry */
 	struct list_head	unknown;	/* Name state not known */
 	struct list_head	resolve;	/* Name needs to be resolved */
 	__u32			timestamp;
@@ -99,7 +99,7 @@ struct discovery_state {
 	u16			uuid_count;
 	u8			(*uuids)[16];
 	unsigned long		name_resolve_timeout;
-	u8		lock; //FIXME
+	u8		        lock; //FIXME
 };
 
 #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
@@ -346,33 +346,33 @@ struct adv_monitor {
 #define HCI_MAX_PAGES	3
 
 struct hci_dev {
-	struct list_head list;
-	struct srcu_struct srcu;
-	struct mutex	lock;
+	struct list_head      list;
+	struct srcu_struct    srcu;
+	struct mutex	      lock;
 
-	struct ida	unset_handle_ida;
+	struct ida	      unset_handle_ida;
 
-	const char	*name;
-	unsigned long	flags;
-	__u16		id;
-	__u8		bus;
-	bdaddr_t	bdaddr;
-	bdaddr_t	setup_addr;
-	bdaddr_t	public_addr;
-	bdaddr_t	random_addr;
-	bdaddr_t	static_addr;
-	__u8		adv_addr_type;
-	__u8		dev_name[HCI_MAX_NAME_LENGTH];
-	__u8		short_name[HCI_MAX_SHORT_NAME_LENGTH];
-	__u8		eir[HCI_MAX_EIR_LENGTH];
-	__u16		appearance;
-	__u8		dev_class[3];
-	__u8		major_class;
-	__u8		minor_class;
-	__u8		max_page;
-	__u8		features[HCI_MAX_PAGES][8];
-	__u8		le_features[8];
-	__u8		le_accept_list_size;
+	const char	      *name;
+	unsigned long	      flags;
+	__u16		      id;
+	__u8		      bus;
+	bdaddr_t	      bdaddr;
+	bdaddr_t	      setup_addr;
+	bdaddr_t	      public_addr;
+	bdaddr_t	      random_addr;
+	bdaddr_t	      static_addr;
+	__u8		      adv_addr_type;
+	__u8		      dev_name[HCI_MAX_NAME_LENGTH];
+	__u8		      short_name[HCI_MAX_SHORT_NAME_LENGTH];
+	__u8		      eir[HCI_MAX_EIR_LENGTH];
+	__u16		      appearance;
+	__u8		      dev_class[3];
+	__u8		      major_class;
+	__u8		      minor_class;
+	__u8		      max_page;
+	__u8		      features[HCI_MAX_PAGES][8];
+	__u8		      le_features[8];
+	__u8		      le_accept_list_size;
 	__u8		le_resolv_list_size;
 	__u8		le_num_of_adv_sets;
 	__u8		le_states[8];
@@ -917,13 +917,13 @@ static inline int inquiry_cache_empty(struct hci_dev *hdev)
 
 static inline long inquiry_cache_age(struct hci_dev *hdev)
 {
-//	struct discovery_state *c = &hdev->discovery;
-//	return jiffies - c->timestamp;
+	struct discovery_state *c = &hdev->discovery;
+	return jiffies - c->timestamp;
 }
 
 static inline long inquiry_entry_age(struct inquiry_entry *e)
 {
-//	return jiffies - e->timestamp;
+	return jiffies - e->timestamp;
 }
 
 struct inquiry_entry *hci_inquiry_cache_lookup(struct hci_dev *hdev,
@@ -1083,8 +1083,8 @@ static inline bool hci_conn_valid(struct hci_dev *hdev, struct hci_conn *conn)
 
 static inline __u8 hci_conn_lookup_type(struct hci_dev *hdev, __u16 handle)
 {
-	struct hci_conn_hash *h = &hdev->conn_hash;
-	struct hci_conn *c;
+//	struct hci_conn_hash *h = &hdev->conn_hash;
+//	struct hci_conn *c;
 	__u8 type = INVALID_LINK;
 
 	rcu_read_lock();
@@ -1126,8 +1126,8 @@ static inline struct hci_conn *hci_conn_hash_lookup_bis(struct hci_dev *hdev,
 static inline struct hci_conn *
 hci_conn_hash_lookup_create_pa_sync(struct hci_dev *hdev)
 {
-	struct hci_conn_hash *h = &hdev->conn_hash;
-	struct hci_conn  *c;
+//	struct hci_conn_hash *h = &hdev->conn_hash;
+//	struct hci_conn  *c;
 
 	rcu_read_lock();
 
@@ -1451,8 +1451,8 @@ hci_conn_hash_lookup_pa_sync_handle(struct hci_dev *hdev, __u16 sync_handle)
 static inline struct hci_conn *hci_conn_hash_lookup_state(struct hci_dev *hdev,
 							__u8 type, __u16 state)
 {
-	struct hci_conn_hash *h = &hdev->conn_hash;
-	struct hci_conn  *c;
+//	struct hci_conn_hash *h = &hdev->conn_hash;
+//	struct hci_conn  *c;
 
 	rcu_read_lock();
 

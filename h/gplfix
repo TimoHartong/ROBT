@@ -3,11 +3,20 @@
 
 #include <stdlib.h>
 
+#define __signed__  signed
+#define __BITS_PER_LONG 32
+
+#define EXPORT_SYMBOL //EXPORT_SYMBOL
+
+#include "uapi/asm-generic/posix_types.h"
+#undef _LINUX_TYPES_H
+#include "linux/types.h"
+//#warning "gplfix 3"
 #include "linux/errno.h"
+//#warning "gplfix 4"
 #include "gpl/include/net/dropreason.h"
-
-
-
+//#warning "gplfix 5"
+#include "uapi/asm-generic/ioctl.h"
 
 // Make sure all the lib is compiled swithes skbuff.h
 #define CONFIG_BT_FEATURE_DEBUG             1
@@ -17,6 +26,7 @@
 #define CONFIG_NF_TABLES                    0
 #define CONFIG_IP_VS                        0
 #define BITS_PER_LONG                       0
+#define CONFIG_IP_SCTP                      0
 
 // switches hci_core
 #define CONFIG_BT_BREDR                     0
@@ -60,7 +70,7 @@
 #define ECANCELED          125
 
 #define MSEC_PER_SEC       1000
-typedef int atomic_t;
+//typedef int atomic_t;
 
 // Google popped up this but header location is unknown
 #define IS_ENABLED(m)       ( (m) != 0 )
@@ -113,21 +123,6 @@ static inline void *ERR_PTR(long error)
 /* include/linux/gfp_types.h */
 typedef unsigned int gfp_t;
 
-/* Just a dummy certainly not meant for actual implementation */
-//struct sk_buff {
-//  struct sk_buff   *next, *prev;
-//  uint8_t          *head;  // Buffer start
-//  uint8_t          *data;  // Data start
-//  uint8_t          *tail;  // Data end
-//  uint8_t          *end;  // Buffer end
-//  uint32_t         len;   // Data length
-//  uint32_t         data_len; // Length of the paged data
-//};
-
-//struct sk_buff_head {
-//  struct sk_buff *next;
-//  struct sk_buff *pref;
-//};
 
 //static inline void skb_reserve(struct sk_buff *skb, int len);
 //struct sk_buff *alloc_skb(unsigned int size, gfp_t priority);
@@ -142,11 +137,6 @@ typedef unsigned int gfp_t;
 //void skb_queue_head_init( struct sk_buff_head *list );
 //void skb_queue_splice_tail(struct sk_buff_head *list , struct sk_buff_head *head);
 
-//static inline void skb_reserve(struct sk_buff *skb, int len)
-//{
-//  skb->data += len;
-//  skb->tail += len;
-//}
 
 // linux/include/linux/firmware.h
 struct firmware {
@@ -155,9 +145,15 @@ struct firmware {
   void       *priv;
 };
 
-int firmware_request_nowarn(const struct firmware **fw, const char *name, struct device *device);
+// FIXME made static
+static inline int firmware_request_nowarn(const struct firmware **fw, const char *name, struct device *device)
+{
+}
 
-void release_firmware(const struct firmware *fw);
+// FIXME made static
+static inline void release_firmware(const struct firmware *fw)
+{
+}
 
 // mod_devicetable.h Only limit taken over
 #define DMI_MATCH(a, b) { a , b }
@@ -185,17 +181,29 @@ static inline const struct dmi_system_id* dmi_first_match(const struct dmi_syste
 
 /*Unknown where defined*/
 //void set_bit(u32 nr, volatile u32 *addr);
-u16 le16_to_cpu(u16 value); // Pi ARM alread little endian
+static inline u16 le16_to_cpu(u16 value)
+{
+    return value;
+}
+// Pi ARM alread little endian
 int snprintf(char *buff, size_t buff_size, const char *format, ... );
 void kvfree(const void* addr);
-u16 cpu_to_le16(u16 value);
-void atomic_set(atomic_t *v, int i);
+static inline u16 cpu_to_le16(u16 value)
+{
+  return value;
+}
+
+static inline void atomic_set(atomic_t *v, int i)
+{
+}
 #define EIO   5
 
 
 /* sys/malloc.h */
 void *kmalloc(size_t size, gfp_t flags);
 void *kfree(void *addr);
+void *kzalloc(size_t size, gfp_t flags);
+void kmalloc_array(size_t n, size_t size, gfp_t flags);
 
 
 /* include/asm-generic/unaligment.h */
@@ -225,17 +233,7 @@ static inline void dev_set_drvdata(struct device *dev, void *data)
 	dev->driver_data = data;
 }
 
-/* include/linux/types.h */
-struct list_head {
-  struct list_head *next;
-  struct list_head *prev;
-};
 
-/* incluide/linux/rcuupdate.h */
-struct rcu_head {
-  struct rcu_head *next;
-  void (*func)(struct rcu_head *head);
-};
 
 void rcu_read_lock(void);
 void rcu_read_unlock(void);
@@ -281,14 +279,16 @@ void list_add_tail_rcu( struct list_head *new , struct list_head *head );
  * or call_rcu() must be used to defer freeing until an RCU
  * grace period has elapsed.
  */
-void list_del_rcu(struct list_head *entry);
+static inline void list_del_rcu(struct list_head *entry)
+{
+}
 //{
 //	__list_del(entry->prev, entry->next);
 //	entry->prev = LIST_POISON2;
 //}
 
 /* rcuupdate.h */
-extern void synchronize_rcu(void);
+static inline  void synchronize_rcu(void) {}
 
 
 
@@ -337,14 +337,6 @@ static inline bool queue_delayed_work(struct workqueue_struct *wq,
 {
 	return queue_delayed_work_on(1, wq, dwork, delay);
 }
-
-
-/* include/linux/skbuff.h */
-//struct sk_buff_head {
-//  struct sk_buff *next;
-//  struct sk_buff *prev;
-//};
-
 
 
 /* include/linux/srcu.h */
@@ -404,7 +396,7 @@ void mutex_unlock(struct mutex *lock);
  *
  * It is not allowed to initialize an already locked mutex.
  */
-void mutex_init(struct mutex *lock);
+static inline void mutex_init(struct mutex *lock) {}
 
 
 /* include/linux/notifier.h */
@@ -440,6 +432,18 @@ static inline void __list_del(struct list_head * prev, struct list_head * next)
 	prev->next = next;
 }
 
+/**
+ * list_add - add a new entry
+ * @new: new entry to be added
+ * @head: list head to add it after
+ *
+ * Insert a new entry after the specified head.
+ * This is good for implementing stacks.
+ */
+static inline void list_add(struct list_head *new, struct list_head *head)
+{
+	__list_add(new, head, head->next);
+}
 
 static inline void list_del(struct list_head *entry)
 {
@@ -486,8 +490,17 @@ static inline void list_add_tail(struct list_head *new, struct list_head *head)
  * @type:	the type of the struct this is embedded in.
  * @member:	the name of the list_struct within the struct.
  */
+static inline void *list_last_entry(void* ptr, void* type, void*member)
+{
+  return NULL;
+}
 //#define list_entry(ptr, type, member) \
 	container_of(ptr, type, member)
+
+static inline void *container_of(void* ptr, void* type, void*member)
+{
+  return NULL;
+}
 
 /**
  * list_for_each_entry	-	iterate over list of given type
@@ -512,6 +525,8 @@ void spin_lock(void);
 void spin_unlock(void);
 
 /* include/asm/bitops.h */
+#define TASK_INTERRUPTIBLE  1
+int wait_on_bit(unsigned long *word, int bit, unsigned int mode);
 bool test_bit(u32 nr, u32 addr);
 void clear_bit(u32 nr, u32 addr);
 void set_bit(u32 nr, u32 addr);
@@ -521,7 +536,7 @@ bool test_and_clear_bit(u32 nr, u32 addr);
 bool test_and_change_bit(u32 nr, u32 addr);
 
 /* include/linux/time.h */
-typedef u32 ktime_t;  // Very free conversion ;-)
+//typedef u32 ktime_t;  // Very free conversion ;-)
 
 /* include/net/sock.h */
 void sock_put(void* sock);
@@ -762,5 +777,53 @@ static inline int sock_error(struct sock *sk)
 	return -err;
 }
 
+/* Should be in linux/jiffries.h but is not there */
+extern unsigned long volatile jiffies;
+
+#ifndef __always_inline
+#define __always_inline inline
+#endif
+
+/* include/linux/srcu.h */
+
+/**
+ * srcu_read_unlock - unregister a old reader from an SRCU-protected structure.
+ * @ssp: srcu_struct in which to unregister the old reader.
+ * @idx: return value from corresponding srcu_read_lock().
+ *
+ * Exit an SRCU read-side critical section.
+ */
+static inline void srcu_read_unlock(struct srcu_struct *ssp, int idx)
+{
+//	WARN_ON_ONCE(idx & ~0x1);
+//	srcu_check_read_flavor(ssp, SRCU_READ_FLAVOR_NORMAL);
+//	srcu_lock_release(&ssp->dep_map);
+//	__srcu_read_unlock(ssp, idx);
+}
+
+/* include/linux/uaccess.h */
+
+static __always_inline unsigned long copy_from_user(void *to, const void  *from, unsigned long n)
+{
+//	if (!check_copy_size(to, n, false))
+//		return n;
+//#ifdef INLINE_COPY_FROM_USER
+//	return _inline_copy_from_user(to, from, n);
+//#else
+//	return _copy_from_user(to, from, n);
+//#endif
+}
+
+static __always_inline unsigned long copy_to_user(void  *to, const void *from, unsigned long n)
+{
+//	if (!check_copy_size(from, n, true))
+//		return n;
+
+//#ifdef INLINE_COPY_TO_USER
+//	return _inline_copy_to_user(to, from, n);
+//#else
+//	return _copy_to_user(to, from, n);
+//#endif
+}
 
 #endif

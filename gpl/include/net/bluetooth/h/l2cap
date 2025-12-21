@@ -27,8 +27,9 @@
 #ifndef __L2CAP_H
 #define __L2CAP_H
 
-#include <linux/unaligned.h>
-#include <linux/atomic.h>
+// FIXME
+//#include <linux/unaligned.h>
+//#include <linux/atomic.h>
 
 /* L2CAP defaults */
 #define L2CAP_DEFAULT_MTU		672
@@ -59,9 +60,9 @@
 #define L2CAP_WAIT_ACK_POLL_PERIOD	msecs_to_jiffies(200)
 #define L2CAP_WAIT_ACK_TIMEOUT		msecs_to_jiffies(10000)
 
-/* L2CAP socket address */
+/* L2CAP socket address FIXME */
 struct sockaddr_l2 {
-	sa_family_t	l2_family;
+//	sa_family_t	l2_family;
 	__le16		l2_psm;
 	bdaddr_t	l2_bdaddr;
 	__le16		l2_cid;
@@ -464,23 +465,40 @@ struct l2cap_le_credits {
 
 struct l2cap_ecred_conn_req {
 	/* New members must be added within the struct_group() macro below. */
-	__struct_group(l2cap_ecred_conn_req_hdr, hdr, __packed,
+//	__struct_group(l2cap_ecred_conn_req_hdr, hdr, __packed,
+//		__le16 psm;
+//		__le16 mtu;
+//		__le16 mps;
+//		__le16 credits;
+//	);
+
+        struct l2cap_ecred_conn_req_hdr
+        {
 		__le16 psm;
 		__le16 mtu;
 		__le16 mps;
 		__le16 credits;
-	);
+	} hdr ;
+
 	__le16 scid[];
 } __packed;
 
 struct l2cap_ecred_conn_rsp {
 	/* New members must be added within the struct_group() macro below. */
-	struct_group_tagged(l2cap_ecred_conn_rsp_hdr, hdr,
+//	struct_group_tagged(l2cap_ecred_conn_rsp_hdr, hdr,
+//		__le16 mtu;
+//		__le16 mps;
+//		__le16 credits;
+//		__le16 result;
+//	);
+
+	struct l2cap_ecred_conn_rsp_hdr {
 		__le16 mtu;
 		__le16 mps;
 		__le16 credits;
 		__le16 result;
-	);
+        } hdr ;
+
 	__le16 dcid[];
 };
 
@@ -511,7 +529,7 @@ struct l2cap_seq_list {
 
 struct l2cap_chan {
 	struct l2cap_conn	*conn;
-	struct kref	kref;
+//	struct kref	kref;
 	atomic_t	nesting;
 
 	__u8		state;
@@ -669,7 +687,7 @@ struct l2cap_conn {
 
 	struct list_head	chan_l;
 	struct mutex		lock;
-	struct kref		ref;
+//	struct kref		ref; // FIXME
 	struct list_head	users;
 };
 
@@ -824,7 +842,8 @@ void l2cap_chan_put(struct l2cap_chan *c);
 
 static inline void l2cap_chan_lock(struct l2cap_chan *chan)
 {
-	mutex_lock_nested(&chan->lock, atomic_read(&chan->nesting));
+  // FIXME
+//	mutex_lock_nested(&chan->lock, atomic_read(&chan->nesting));
 }
 
 static inline void l2cap_chan_unlock(struct l2cap_chan *chan)
@@ -842,8 +861,8 @@ static inline void l2cap_set_timer(struct l2cap_chan *chan,
 	   since it is already done with previous set_timer */
 	if (!cancel_delayed_work(work))
 		l2cap_chan_hold(chan);
-
-	schedule_delayed_work(work, timeout);
+  // FIXME
+//	schedule_delayed_work(work, timeout);
 }
 
 static inline bool l2cap_clear_timer(struct l2cap_chan *chan,

@@ -55,24 +55,12 @@ typedef char bcm_fw_name[BCM_FW_NAME_LEN];
 //#define CONFIG_EFI
 
 
-//void kfree_skb(struct sk_buff *skb)
-//{
-//}
-
-u16 le16_to_cpu(u16 value)
-{
-  return value;
-}
-
 void set_bit(u32 nr, volatile u32 addr)
 {
   if ( nr < 32 )
       addr |= 1 << nr;
 }
 
-void release_firmware(const struct firmware *fw)
-{
-}
 
 void *kmalloc(size_t size, gfp_t flags)
 {

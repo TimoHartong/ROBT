@@ -1,0 +1,192 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include "gplfix.h"
+#include "net/dropreason.h"
+
+/**
+ *	__alloc_skb	-	allocate a network buffer
+ *	@size: size to allocate
+ *	@gfp_mask: allocation mask
+ *	@flags: If SKB_ALLOC_FCLONE is set, allocate from fclone cache
+ *		instead of head cache and allocate a cloned (child) skb.
+ *		If SKB_ALLOC_RX is set, __GFP_MEMALLOC will be used for
+ *		allocations in case the data is required for writeback
+ *	@node: numa node to allocate memory on
+ *
+ *	Allocate a new &sk_buff. The returned buffer has no headroom and a
+ *	tail room of at least size bytes. The object has a reference count
+ *	of one. The return is the buffer. On a failure the return is %NULL.
+ *
+ *	Buffers may only be allocated from interrupts using a @gfp_mask of
+ *	%GFP_ATOMIC.
+ */
+ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+			    int flags, int node)
+{
+	struct sk_buff *skb = NULL;
+	struct kmem_cache *cache;
+	bool pfmemalloc;
+	u8 *data;
+
+//	if (sk_memalloc_socks() && (flags & SKB_ALLOC_RX))
+//		gfp_mask |= __GFP_MEMALLOC;
+
+//	if (flags & SKB_ALLOC_FCLONE) {
+//		cache = net_hotdata.skbuff_fclone_cache;
+//		goto fallback;
+//	}
+//	cache = net_hotdata.skbuff_cache;
+//	if (unlikely(node != NUMA_NO_NODE && node != numa_mem_id()))
+//		goto fallback;
+
+//	if (flags & SKB_ALLOC_NAPI) {
+//		skb = napi_skb_cache_get(true);
+//		if (unlikely(!skb))
+//			return NULL;
+//	} else if (!in_hardirq() && !irqs_disabled()) {
+//		local_bh_disable();
+//		skb = napi_skb_cache_get(false);
+//		local_bh_enable();
+//	}
+
+//	if (!skb) {
+//fallback:
+//		skb = kmem_cache_alloc_node(cache, gfp_mask & ~GFP_DMA, node);
+//		if (unlikely(!skb))
+//			return NULL;
+//	}
+//	prefetchw(skb);
+
+	/* We do our best to align skb_shared_info on a separate cache
+	 * line. It usually works because kmalloc(X > SMP_CACHE_BYTES) gives
+	 * aligned memory blocks, unless SLUB/SLAB debug is enabled.
+	 * Both skb->head and skb_shared_info are cache line aligned.
+	 */
+//	data = kmalloc_reserve(&size, gfp_mask, node, &pfmemalloc);
+//	if (unlikely(!data))
+//		goto nodata;
+	/* kmalloc_size_roundup() might give us more room than requested.
+	 * Put skb_shared_info exactly at the end of allocated zone,
+	 * to allow max possible filling before reallocation.
+	 */
+//	prefetchw(data + SKB_WITH_OVERHEAD(size));
+
+	/*
+	 * Only clear those fields we need to clear, not those that we will
+	 * actually initialise below. Hence, don't put any more fields after
+	 * the tail pointer in struct sk_buff!
+	 */
+//	memset(skb, 0, offsetof(struct sk_buff, tail));
+//	__build_skb_around(skb, data, size);
+//	skb->pfmemalloc = pfmemalloc;
+
+//	if (flags & SKB_ALLOC_FCLONE) {
+//		struct sk_buff_fclones *fclones;
+
+//		fclones = container_of(skb, struct sk_buff_fclones, skb1);
+
+ //		skb->fclone = SKB_FCLONE_ORIG;
+//		refcount_set(&fclones->fclone_ref, 1);
+//	}
+
+//	return skb;
+
+//nodata:
+//	kmem_cache_free(cache, skb);
+//	return NULL;
+}
+
+/**
+ *	__kfree_skb - private function
+ *	@skb: buffer
+ *
+ *	Free an sk_buff. Release anything attached to the buffer.
+ *	Clean the state. This is an internal helper function. Users should
+ *	always call kfree_skb
+ */
+void __kfree_skb(struct sk_buff *skb)
+{
+//	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
+//	kfree_skbmem(skb);
+}
+
+
+bool __sk_skb_reason_drop(struct sock *sk, struct sk_buff *skb,
+			  enum skb_drop_reason reason)
+{
+//	if (unlikely(!skb_unref(skb)))
+//		return false;
+
+//	DEBUG_NET_WARN_ON_ONCE(reason == SKB_NOT_DROPPED_YET ||
+//			       u32_get_bits(reason,
+//					    SKB_DROP_REASON_SUBSYS_MASK) >=
+//				SKB_DROP_REASON_SUBSYS_NUM);
+
+//	if (reason == SKB_CONSUMED)
+//		trace_consume_skb(skb, __builtin_return_address(0));
+//	else
+//		trace_kfree_skb(skb, __builtin_return_address(0), reason, sk);
+	return true;
+}
+
+/**
+ *	sk_skb_reason_drop - free an sk_buff with special reason
+ *	@sk: the socket to receive @skb, or NULL if not applicable
+ *	@skb: buffer to free
+ *	@reason: reason why this skb is dropped
+ *
+ *	Drop a reference to the buffer and free it if the usage count has hit
+ *	zero. Meanwhile, pass the receiving socket and drop reason to
+ *	'kfree_skb' tracepoint.
+ */
+void sk_skb_reason_drop(struct sock *sk, struct sk_buff *skb, enum skb_drop_reason reason)
+{
+//	if (__sk_skb_reason_drop(sk, skb, reason))
+//		__kfree_skb(skb);
+}
+
+/**
+ *	skb_put - add data to a buffer
+ *	@skb: buffer to use
+ *	@len: amount of data to add
+ *
+ *	This function extends the used data area of the buffer. If this would
+ *	exceed the total buffer size the kernel will panic. A pointer to the
+ *	first byte of the extra data is returned.
+ */
+void *skb_put(struct sk_buff *skb, unsigned int len)
+{
+//	void *tmp = skb_tail_pointer(skb);
+//	SKB_LINEAR_ASSERT(skb);
+	skb->tail += len;
+	skb->len  += len;
+//	if (unlikely(skb->tail > skb->end))
+//		skb_over_panic(skb, len, __builtin_return_address(0));
+//	return tmp;
+}
+
+
+
+/**
+ *	skb_queue_tail - queue a buffer at the list tail
+ *	@list: list to use
+ *	@newsk: buffer to queue
+ *
+ *	Queue a buffer at the tail of the list. This function takes the
+ *	list lock and can be used safely with other locking &sk_buff functions
+ *	safely.
+ *
+ *	A buffer cannot be placed on two lists at the same time.
+ */
+void skb_queue_tail(struct sk_buff_head *list, struct sk_buff *newsk)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&list->lock, flags);
+	__skb_queue_tail(list, newsk);
+	spin_unlock_irqrestore(&list->lock, flags);
+}
